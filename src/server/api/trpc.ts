@@ -6,11 +6,13 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC } from "@trpc/server";
+import { TRPCError, initTRPC } from "@trpc/server";
+import { cookies } from "next/headers";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "~/server/db";
+import { verifyJWT } from "~/utils/jwt";
 
 /**
  * 1. CONTEXT
@@ -52,6 +54,28 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
   },
 });
 
+export const isAuthed = t.middleware(async ({ ctx, next }) => {
+  const token = cookies().get("Authorization")?.value.split(" ")[1];
+  if (!token) throw new TRPCError({ code: "UNAUTHORIZED" });
+  const userId = verifyJWT(token as string);
+  const user = await db.user.findUnique({
+    where: {
+      id: userId.userId,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      verified: true,
+    },
+  });
+  return next({
+    ctx: {
+      user,
+    },
+  });
+});
+
 /**
  * Create a server-side caller.
  *
@@ -81,3 +105,4 @@ export const createTRPCRouter = t.router;
  * are logged in.
  */
 export const publicProcedure = t.procedure;
+export const privateProcedure = t.procedure.use(isAuthed);

@@ -1,65 +1,165 @@
-import Link from "next/link";
+"use client";
+import { useEffect, useLayoutEffect, useState } from "react";
+import { getAuthUser } from "~/utils/getAuthUser";
+import {
+  HiChevronDoubleLeft,
+  HiChevronDoubleRight,
+  HiChevronLeft,
+  HiChevronRight,
+} from "react-icons/hi2";
+import CheckboxInput from "./_components/CheckboxInput";
+import { api } from "~/trpc/react";
+import { toast } from "react-toastify";
+import Loading from "./_components/Loading";
+import { readFromStorage } from "~/utils/storage";
+import { useRouter } from "next/navigation";
 
-import { CreatePost } from "~/app/_components/create-post";
-import { api } from "~/trpc/server";
+export type Categories = {
+  id: string;
+  name: string;
+  isChecked: boolean;
+};
 
-export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
+export default function Home() {
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  useLayoutEffect(() => {
+    const data = readFromStorage("user");
+    if (!data.verified) {
+      void router.replace("/sign-up/verify-email");
+      return;
+    }
+    async function checkIfauthenticated() {
+      await getAuthUser();
+    }
+    checkIfauthenticated();
+  }, []);
+
+  const [categories, setCategories] = useState<Categories[]>();
+  const [numOfPages, setNumOfPages] = useState(0);
+  const [page, setPage] = useState(1);
+  const { mutate: getDataFn } = api.categories.getAllCategories.useMutation({
+    onMutate() {
+      setLoading(true);
+    },
+    onSettled() {
+      setLoading(false);
+    },
+    onError(error) {
+      toast.error(error.message);
+    },
+    onSuccess(data) {
+      setCategories(data.categories);
+
+      setNumOfPages(data.numOfPages);
+    },
+  });
+
+  useEffect(() => {
+    getDataFn({ page: page });
+  }, [page]);
+
+  const nextPage = () => {
+    let newPage = page + 1;
+    if (newPage > numOfPages) {
+      newPage = 1;
+    }
+    setPage(newPage);
+  };
+  const prevPage = () => {
+    let newPage = page - 1;
+    if (newPage < 1) {
+      newPage = numOfPages;
+    }
+    setPage(newPage);
+  };
+
+  const createPageBtn = (pageNumber: number) => {
+    return (
+      <button
+        type="button"
+        key={pageNumber}
+        className={`mx-3 hover:text-gray-700 ${pageNumber == page ? "text-black" : ""}`}
+        onClick={() => setPage(pageNumber)}
+      >
+        {pageNumber}
+      </button>
+    );
+  };
+
+  const renderPageButtons = () => {
+    const pageButtons: React.JSX.Element[] = [];
+    const windowSize = 4; // how many buttons to show on each side of the current button
+    if (windowSize >= numOfPages) {
+      for (let i = 1; i <= numOfPages; i++) {
+        pageButtons.push(createPageBtn(i));
+      }
+    } else {
+      if (page > Math.ceil(windowSize / 2) + 1) {
+        pageButtons.push(<span key={"dot-1"}>...</span>);
+      }
+      let start = page;
+      if (page <= Math.floor(windowSize / 2)) {
+        start = 1;
+      } else if (page - Math.floor(windowSize / 2) > 0) {
+        start = page - Math.floor(windowSize / 2);
+      }
+      if (page + windowSize >= numOfPages) {
+        start = numOfPages - windowSize;
+      }
+      for (let i = start; i <= start + windowSize; i++) {
+        if (i < 1 || i > numOfPages) continue;
+        pageButtons.push(createPageBtn(i));
+      }
+      if (page + windowSize < numOfPages) {
+        pageButtons.push(<span key={"dot-2"}>...</span>);
+      }
+    }
+
+    return pageButtons;
+  };
+
+  if (loading) {
+    return (
+      <main className="grid  h-[calc(100vh-10rem)] place-items-center">
+        <Loading />
+      </main>
+    );
+  }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-        <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-          Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-        </h1>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-            href="https://create.t3.gg/en/usage/first-steps"
-            target="_blank"
-          >
-            <h3 className="text-2xl font-bold">First Steps →</h3>
-            <div className="text-lg">
-              Just the basics - Everything you need to know to set up your
-              database and authentication.
-            </div>
-          </Link>
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-            href="https://create.t3.gg/en/introduction"
-            target="_blank"
-          >
-            <h3 className="text-2xl font-bold">Documentation →</h3>
-            <div className="text-lg">
-              Learn more about Create T3 App, the libraries it uses, and how to
-              deploy it.
-            </div>
-          </Link>
+    <main className="grid  place-items-center">
+      <form className="m-5 flex  flex-col rounded-xl border p-12 sm:min-w-[35%]">
+        <h2 className="mb-5 text-center text-2xl font-bold">
+          Please mark your interests!
+        </h2>
+        <p className="mb-5 text-center ">We will keep you notified.</p>
+        <h3 className="mb-5 font-semibold">My saved interests!</h3>
+        <div className="mb-7">
+          {categories?.map((props) => {
+            return <CheckboxInput {...props} key={props.id} />;
+          })}
         </div>
-        <div className="flex flex-col items-center gap-2">
-          <p className="text-2xl text-white">
-            {hello ? hello.greeting : "Loading tRPC query..."}
-          </p>
+        <div className="flex  items-center gap-0.5  text-gray-400">
+          <HiChevronDoubleLeft
+            onClick={() => setPage(1)}
+            className="hover:cursor-pointer hover:text-gray-700"
+          />
+          <HiChevronLeft
+            onClick={prevPage}
+            className="hover:cursor-pointer hover:text-gray-700"
+          />
+          {renderPageButtons()}
+          <HiChevronRight
+            onClick={nextPage}
+            className="hover:cursor-pointer hover:text-gray-700"
+          />
+          <HiChevronDoubleRight
+            onClick={() => setPage(numOfPages)}
+            className="hover:cursor-pointer hover:text-gray-700"
+          />
         </div>
-
-        <CrudShowcase />
-      </div>
+      </form>
     </main>
-  );
-}
-
-async function CrudShowcase() {
-  const latestPost = await api.post.getLatest();
-
-  return (
-    <div className="w-full max-w-xs">
-      {latestPost ? (
-        <p className="truncate">Your most recent post: {latestPost.name}</p>
-      ) : (
-        <p>You have no posts yet.</p>
-      )}
-
-      <CreatePost />
-    </div>
   );
 }

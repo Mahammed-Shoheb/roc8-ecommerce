@@ -1,8 +1,12 @@
 import "~/styles/globals.css";
 
 import { Inter } from "next/font/google";
+// import "~/utils/populateDB";
 
 import { TRPCReactProvider } from "~/trpc/react";
+import Header from "./_components/Header";
+import { Bounce, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,7 +27,21 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
+        <Header />
         <TRPCReactProvider>{children}</TRPCReactProvider>
+        <ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+          transition={Bounce}
+        />
       </body>
     </html>
   );
