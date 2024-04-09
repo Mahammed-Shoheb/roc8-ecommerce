@@ -26,7 +26,7 @@ export default function Home() {
   const router = useRouter();
 
   const [categories, setCategories] = useState<Categories[]>();
-  const [numOfPages, setNumOfPages] = useState(0);
+  const [numOfPages, setNumOfPages] = useState(5);
   const [page, setPage] = useState(1);
   const { mutate: getDataFn } = api.categories.getAllCategories.useMutation({
     onMutate() {
@@ -46,11 +46,6 @@ export default function Home() {
   });
 
   useLayoutEffect(() => {
-    const data: data = readFromStorage("user");
-    if (!data.verified) {
-      void router.replace("/sign-up/verify-email");
-      return;
-    }
     async function checkIfauthenticated() {
       try {
         await getAuthUser();
@@ -59,6 +54,11 @@ export default function Home() {
       }
     }
     void checkIfauthenticated();
+    const data: data = readFromStorage("user");
+    if (!data.verified) {
+      void router.replace("/sign-up/verify-email");
+      return;
+    }
   }, [router, getDataFn]);
 
   useEffect(() => {
@@ -66,18 +66,22 @@ export default function Home() {
   }, [page, getDataFn]);
 
   const nextPage = () => {
-    let newPage = page + 1;
-    if (newPage > numOfPages) {
-      newPage = 1;
+    if (!loading) {
+      let newPage = page + 1;
+      if (newPage > numOfPages) {
+        newPage = 1;
+      }
+      setPage(newPage);
     }
-    setPage(newPage);
   };
   const prevPage = () => {
-    let newPage = page - 1;
-    if (newPage < 1) {
-      newPage = numOfPages;
+    if (!loading) {
+      let newPage = page - 1;
+      if (newPage < 1) {
+        newPage = numOfPages;
+      }
+      setPage(newPage);
     }
-    setPage(newPage);
   };
 
   const createPageBtn = (pageNumber: number) => {
@@ -85,8 +89,9 @@ export default function Home() {
       <button
         type="button"
         key={pageNumber}
-        className={`mx-3 hover:text-gray-700 ${pageNumber == page ? "text-black" : ""}`}
+        className={`mx-3 hover:text-gray-700 disabled:cursor-wait disabled:text-gray-300 ${pageNumber == page ? "text-black" : ""}`}
         onClick={() => setPage(pageNumber)}
+        disabled={loading}
       >
         {pageNumber}
       </button>
@@ -125,30 +130,38 @@ export default function Home() {
     return pageButtons;
   };
 
-  if (loading) {
-    return (
-      <main className="grid  h-[calc(100vh-10rem)] place-items-center">
-        <Loading />
-      </main>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <main className="grid  h-[calc(100vh-10rem)] place-items-center">
+  //       <Loading />
+  //     </main>
+  //   );
+  // }
 
   return (
     <main className="grid  place-items-center">
-      <form className="m-5 flex  flex-col rounded-xl border p-12 sm:min-w-[35%]">
+      <form className="m-5 flex  flex-col rounded-xl border p-4 sm:min-w-[35%] sm:p-12">
         <h2 className="mb-5 text-center text-2xl font-bold">
           Please mark your interests!
         </h2>
         <p className="mb-5 text-center ">We will keep you notified.</p>
         <h3 className="mb-5 font-semibold">My saved interests!</h3>
         <div className="mb-7">
-          {categories?.map((props) => {
-            return <CheckboxInput {...props} key={props.id} />;
-          })}
+          {loading ? (
+            <Loading />
+          ) : (
+            categories?.map((props) => {
+              return <CheckboxInput {...props} key={props.id} />;
+            })
+          )}
         </div>
         <div className="flex  items-center gap-0.5  text-gray-400">
           <HiChevronDoubleLeft
-            onClick={() => setPage(1)}
+            onClick={() => {
+              if (!loading) {
+                setPage(1);
+              }
+            }}
             className="hover:cursor-pointer hover:text-gray-700"
           />
           <HiChevronLeft
@@ -161,7 +174,11 @@ export default function Home() {
             className="hover:cursor-pointer hover:text-gray-700"
           />
           <HiChevronDoubleRight
-            onClick={() => setPage(numOfPages)}
+            onClick={() => {
+              if (!loading) {
+                setPage(numOfPages);
+              }
+            }}
             className="hover:cursor-pointer hover:text-gray-700"
           />
         </div>

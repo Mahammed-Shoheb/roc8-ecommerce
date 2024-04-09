@@ -120,7 +120,7 @@ export default function VerifyEmail() {
     <main className="grid  place-items-center">
       <form
         onSubmit={handleSubmit}
-        className="m-5 flex flex-col rounded-xl border p-12 sm:min-w-[35%]"
+        className="m-5 flex flex-col rounded-xl border p-4 sm:min-w-[35%] sm:p-12"
       >
         <h2 className="mb-5 text-center text-2xl font-bold">
           Verify your email
@@ -148,7 +148,7 @@ export default function VerifyEmail() {
                 onChange={(e) => handleChange(index, e)}
                 onClick={() => handleClick(index)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
-                className=" h-10 w-10 rounded-md border  text-center"
+                className=" h-8 w-8 rounded-md border text-center sm:h-10  sm:w-10"
                 required
               />
             ))}

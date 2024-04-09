@@ -60,7 +60,7 @@ export default function Login() {
     <main className="grid  place-items-center">
       <form
         onSubmit={(e) => handleSubmit(e)}
-        className="m-5 flex flex-col rounded-xl border p-12 sm:min-w-[35%]  "
+        className="m-5 flex  flex-col rounded-xl border p-4 sm:p-12 md:min-w-[35%] "
       >
         <h2 className="mb-5 text-center text-2xl font-bold">Login</h2>
         <h3 className="mb-3 text-center text-2xl font-semibold">
@@ -114,7 +114,7 @@ export default function Login() {
           {submitting ? "logging in..." : "login"}
         </button>
         <p className=" text-center">
-          Don&apost have an Account?{" "}
+          Don&apos;t have an Account?{" "}
           <Link
             href={"/sign-up"}
             className="font-semibold uppercase tracking-wide hover:text-gray-700"

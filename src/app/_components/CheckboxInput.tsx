@@ -46,7 +46,7 @@ export default function CheckboxInput({ name, id, isChecked }: Categories) {
       <PiCheckBold className="pointer-events-none absolute h-5 w-5 fill-none stroke-white px-[1px]  hover:text-gray-500 peer-checked:!fill-white " />
       <label
         htmlFor={id}
-        className="capitalize hover:cursor-pointer hover:text-gray-500 peer-disabled:cursor-not-allowed peer-disabled:text-gray-500"
+        className="max-w-[70vw] text-wrap  break-words capitalize hover:cursor-pointer hover:text-gray-500 peer-disabled:cursor-not-allowed peer-disabled:text-gray-500"
       >
         {name}
       </label>

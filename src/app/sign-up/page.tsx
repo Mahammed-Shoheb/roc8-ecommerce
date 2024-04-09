@@ -63,7 +63,7 @@ export default function SignUp() {
     <main className="grid  place-items-center">
       <form
         onSubmit={(e) => handleSubmit(e)}
-        className="m-5 flex flex-col rounded-xl border p-12  sm:min-w-[35%]"
+        className="m-5 flex flex-col rounded-xl border p-4 sm:min-w-[35%]  sm:p-12 "
       >
         <h2 className="mb-5 text-center text-2xl font-bold">
           Create your account

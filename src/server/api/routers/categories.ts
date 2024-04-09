@@ -33,7 +33,7 @@ export const categoriesRouter = createTRPCRouter({
           });
         const totalCategories = categories.length;
         const page = input.page || 1;
-        const perPage = 7;
+        const perPage = 6;
         const skip = (page - 1) * perPage;
         const numOfPages = Math.ceil(totalCategories / perPage);
         categories = categories.slice(skip, skip + perPage);
