@@ -1,14 +1,16 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useRef, useState, useEffect, FormEvent, useLayoutEffect } from "react";
+import { useRef, useState, useEffect, useLayoutEffect } from "react";
+import type { FormEvent } from "react";
 import { toast } from "react-toastify";
 import { api } from "~/trpc/react";
 import { getAuthUser } from "~/utils/getAuthUser";
 import { readFromStorage, wrtieToStorage } from "~/utils/storage";
+import type { data } from "~/utils/storage";
 
 export default function VerifyEmail() {
   const [enteredCode, setEnteredCode] = useState<string[]>(Array(8).fill(""));
-  const inputRefs = useRef<any>([]);
+  const inputRefs = useRef<HTMLInputElement[]>([]);
   const verifyButtomRefs = useRef<HTMLButtonElement>(null);
   const router = useRouter();
   const length = enteredCode.length;
@@ -17,13 +19,17 @@ export default function VerifyEmail() {
 
   useLayoutEffect(() => {
     async function checkIfauthenticated() {
-      await getAuthUser();
+      try {
+        await getAuthUser();
+      } catch (error) {
+        toast.error("UNAUTHORIZED");
+      }
     }
-    checkIfauthenticated();
+    void checkIfauthenticated();
   }, []);
 
   useEffect(() => {
-    const data = readFromStorage("user");
+    const data: data = readFromStorage("user");
     if (data.email) setUserEmail(data.email);
     if (data.verified) {
       void router.replace("/login");
@@ -31,7 +37,7 @@ export default function VerifyEmail() {
     if (inputRefs.current[0]) {
       inputRefs.current[0].focus();
     }
-  }, []);
+  }, [router]);
 
   const handleChange = (index: number, e: React.ChangeEvent<EventTarget>) => {
     const value = (e.target as HTMLInputElement).value;
@@ -133,7 +139,9 @@ export default function VerifyEmail() {
                 id={`code-box-${index}`}
                 key={index}
                 value={digit}
-                ref={(input: any) => (inputRefs.current[index] = input)}
+                ref={(input) => {
+                  if (input) inputRefs.current[index] = input;
+                }}
                 type="text"
                 maxLength={1}
                 name={`digit${index}`}

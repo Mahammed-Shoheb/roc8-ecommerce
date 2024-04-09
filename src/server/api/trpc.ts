@@ -26,12 +26,20 @@ import { verifyJWT } from "~/utils/jwt";
  *
  * @see https://trpc.io/docs/server/context
  */
+
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   return {
     db,
     ...opts,
   };
 };
+
+/**
+ * This is the actual context you will use in your router. It will be used to process every request
+ * that goes through your tRPC endpoint.
+ *
+ * @see https://trpc.io/docs/context
+ */
 
 /**
  * 2. INITIALIZATION
@@ -54,13 +62,13 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
   },
 });
 
-export const isAuthed = t.middleware(async ({ ctx, next }) => {
+export const isAuthed = t.middleware(async ({ next }) => {
   const token = cookies().get("Authorization")?.value.split(" ")[1];
   if (!token) throw new TRPCError({ code: "UNAUTHORIZED" });
-  const userId = verifyJWT(token as string);
+  const verfifiedUser = verifyJWT(token);
   const user = await db.user.findUnique({
     where: {
-      id: userId.userId,
+      id: verfifiedUser.userId as string,
     },
     select: {
       id: true,

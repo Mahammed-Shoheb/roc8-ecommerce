@@ -19,7 +19,7 @@ export const appRouter = createTRPCRouter({
 export const createCaller = createCallerFactory(appRouter);
 
 export const createAsyncCaller = async () => {
-  const context = await createTRPCContext();
+  const context = await createTRPCContext({ headers: new Headers() });
   return createCaller(context);
 };
 

@@ -1,5 +1,6 @@
 "use server";
 
+import type { TRPCError } from "@trpc/server";
 import { redirect } from "next/navigation";
 import { createAsyncCaller } from "~/server/api/root";
 
@@ -10,8 +11,8 @@ export const getAuthUser = async () => {
     .then(({ isAuthenticated }) => {
       if (!isAuthenticated) redirect("/login");
     })
-    .catch(async (error) => {
-      // if (error.code !== "auth/required") throw error;
+    .catch((error: TRPCError) => {
+      if (error.code !== "UNAUTHORIZED") throw error;
       redirect("/login");
     });
 };

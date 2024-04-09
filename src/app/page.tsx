@@ -12,6 +12,7 @@ import { api } from "~/trpc/react";
 import { toast } from "react-toastify";
 import Loading from "./_components/Loading";
 import { readFromStorage } from "~/utils/storage";
+import type { data } from "~/utils/storage";
 import { useRouter } from "next/navigation";
 
 export type Categories = {
@@ -23,17 +24,6 @@ export type Categories = {
 export default function Home() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  useLayoutEffect(() => {
-    const data = readFromStorage("user");
-    if (!data.verified) {
-      void router.replace("/sign-up/verify-email");
-      return;
-    }
-    async function checkIfauthenticated() {
-      await getAuthUser();
-    }
-    checkIfauthenticated();
-  }, []);
 
   const [categories, setCategories] = useState<Categories[]>();
   const [numOfPages, setNumOfPages] = useState(0);
@@ -55,9 +45,25 @@ export default function Home() {
     },
   });
 
+  useLayoutEffect(() => {
+    const data: data = readFromStorage("user");
+    if (!data.verified) {
+      void router.replace("/sign-up/verify-email");
+      return;
+    }
+    async function checkIfauthenticated() {
+      try {
+        await getAuthUser();
+      } catch (error) {
+        toast.error("UNAUTHORIZED");
+      }
+    }
+    void checkIfauthenticated();
+  }, [router, getDataFn]);
+
   useEffect(() => {
     getDataFn({ page: page });
-  }, [page]);
+  }, [page, getDataFn]);
 
   const nextPage = () => {
     let newPage = page + 1;

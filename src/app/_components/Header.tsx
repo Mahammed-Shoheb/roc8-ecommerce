@@ -5,12 +5,13 @@ import { IoSearchOutline } from "react-icons/io5";
 import { PiShoppingCartSimpleLight } from "react-icons/pi";
 import { GoChevronRight, GoChevronLeft } from "react-icons/go";
 import { readFromStorage } from "~/utils/storage";
+import type { data } from "~/utils/storage";
 import { useEffect, useState } from "react";
 
 export default function Header() {
   const [userName, setUserName] = useState("John");
   useEffect(() => {
-    const data = readFromStorage("user");
+    const data: data = readFromStorage("user");
     if (data.name) setUserName(data.name);
   }, []);
   return (

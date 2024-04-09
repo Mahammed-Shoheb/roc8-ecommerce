@@ -1,4 +1,5 @@
-import { object, TypeOf, string } from "zod";
+import { object, string } from "zod";
+import type { TypeOf } from "zod";
 
 export const signUpUserSchema = object({
   name: string({ required_error: "Name is required" }).min(

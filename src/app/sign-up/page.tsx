@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import { api } from "~/trpc/react";
 import { wrtieToStorage } from "~/utils/storage";
 import { toast } from "react-toastify";
-import { SignUpUserInput } from "lib/user-schema";
+import type { SignUpUserInput } from "lib/user-schema";
 
 export default function SignUp() {
   const [user, setUser] = useState<SignUpUserInput>({

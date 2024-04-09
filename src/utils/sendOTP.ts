@@ -22,10 +22,10 @@ export default async function sendOTP(email: string, name: string) {
   // });
 
   const mailerSend = new MailerSend({
-    apiKey: process.env.API_KEY as string,
+    apiKey: process.env.API_KEY!,
   });
 
-  const sentFrom = new Sender(process.env.EMAIL_USER as string, "ECOMMERCE");
+  const sentFrom = new Sender(process.env.EMAIL_USER!, "ECOMMERCE");
 
   const recipients = [new Recipient(email, email)];
 

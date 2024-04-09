@@ -1,9 +1,10 @@
 "use client";
 
-import { LoginUserInput } from "lib/user-schema";
+import type { LoginUserInput } from "lib/user-schema";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import { toast } from "react-toastify";
 import { api } from "~/trpc/react";
 import { wrtieToStorage } from "~/utils/storage";
@@ -113,7 +114,7 @@ export default function Login() {
           {submitting ? "logging in..." : "login"}
         </button>
         <p className=" text-center">
-          Don't have an Account?{" "}
+          Don&apost have an Account?{" "}
           <Link
             href={"/sign-up"}
             className="font-semibold uppercase tracking-wide hover:text-gray-700"

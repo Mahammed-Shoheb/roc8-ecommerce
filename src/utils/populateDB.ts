@@ -8,7 +8,7 @@ export default async function main() {
     try {
       await prisma.category.create({
         data: {
-          name: faker.commerce.productName() as string,
+          name: faker.commerce.productName(),
         },
       });
     } catch (error) {
@@ -18,4 +18,4 @@ export default async function main() {
   console.log("done");
 }
 
-main();
+await main();

@@ -14,6 +14,7 @@ import {
   signUpUserSchema,
 } from "lib/user-schema";
 import sendOTP from "~/utils/sendOTP";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 export const userRouter = createTRPCRouter({
   registerUser: publicProcedure
@@ -42,7 +43,7 @@ export const userRouter = createTRPCRouter({
           data: userCategories,
         });
 
-        const token = generateAccessToken(newUser);
+        const token = generateAccessToken(newUser.id);
         // ctx.headers.set("Authorization", `Bearer ${token}`);
         const cookieOptions = {
           httpOnly: true,
@@ -58,13 +59,16 @@ export const userRouter = createTRPCRouter({
             verified: newUser.verified,
           },
         };
-      } catch (error: any) {
-        if (error.code === "P2002") {
-          throw new TRPCError({
-            code: "CONFLICT",
-            message: "Email already exists",
-          });
+      } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError) {
+          if (error.code === "P2002") {
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: "Email already exists",
+            });
+          }
         }
+
         throw error;
       }
     }),
@@ -130,7 +134,7 @@ export const userRouter = createTRPCRouter({
             message: "Incorrect username or password.",
           });
 
-        const token = generateAccessToken(user);
+        const token = generateAccessToken(user.id);
         const cookieOptions = {
           httpOnly: true,
           path: "/",

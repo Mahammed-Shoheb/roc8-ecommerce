@@ -1,5 +1,5 @@
 import { PiCheckBold } from "react-icons/pi";
-import { Categories } from "../page";
+import type { Categories } from "../page";
 import { api } from "~/trpc/react";
 import { useState } from "react";
 import { toast } from "react-toastify";

@@ -2,6 +2,11 @@ import { z } from "zod";
 import { createTRPCRouter, privateProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 
+type data = {
+  id: string;
+  name: string;
+  isChecked: boolean;
+};
 export const categoriesRouter = createTRPCRouter({
   getAllCategories: privateProcedure
     .input(z.object({ page: z.number() }))
@@ -32,7 +37,7 @@ export const categoriesRouter = createTRPCRouter({
         const skip = (page - 1) * perPage;
         const numOfPages = Math.ceil(totalCategories / perPage);
         categories = categories.slice(skip, skip + perPage);
-        const data: any[] = [];
+        const data: data[] = [];
         const categoryPromise = categories.map(async (category) => {
           const result = await ctx.db.category.findUnique({
             where: {
@@ -42,9 +47,10 @@ export const categoriesRouter = createTRPCRouter({
               name: true,
             },
           });
+
           data.push({
             id: category.categoryId,
-            name: result?.name,
+            name: result!.name,
             isChecked: category.isChecked,
           });
         });
@@ -70,7 +76,7 @@ export const categoriesRouter = createTRPCRouter({
         const data = await ctx.db.userCategory.update({
           where: {
             userId_categoryId: {
-              userId: ctx.user!.id,
+              userId: ctx.user.id,
               categoryId: input.catagoryId,
             },
           },
