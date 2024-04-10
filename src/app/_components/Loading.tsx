@@ -2,27 +2,27 @@ export default function Loading() {
   return (
     <>
       <div role="status" className="animate-pulse">
-        <div className="mb-3  flex  items-center gap-3">
+        <div className="mb-4  flex  items-center gap-3">
           <div className="h-5 w-5 bg-gray-200"></div>
           <div className=" h-5 w-52 rounded-sm bg-gray-200"></div>
         </div>
-        <div className="mb-3  flex  items-center gap-3">
+        <div className="mb-4  flex  items-center gap-3">
           <div className="h-5 w-5 bg-gray-200"></div>
           <div className=" h-5 w-52 rounded-sm bg-gray-200"></div>
         </div>
-        <div className="mb-3  flex  items-center gap-3">
+        <div className="mb-4  flex  items-center gap-3">
           <div className="h-5 w-5 bg-gray-200"></div>
           <div className=" h-5 w-52 rounded-sm bg-gray-200"></div>
         </div>
-        <div className="mb-3  flex  items-center gap-3">
+        <div className="mb-4  flex  items-center gap-3">
           <div className="h-5 w-5 bg-gray-200"></div>
           <div className=" h-5 w-52 rounded-sm bg-gray-200"></div>
         </div>
-        <div className="mb-3  flex  items-center gap-3">
+        <div className="mb-4  flex  items-center gap-3">
           <div className="h-5 w-5 bg-gray-200"></div>
           <div className=" h-5 w-52 rounded-sm bg-gray-200"></div>
         </div>
-        <div className="mb-3  flex  items-center gap-3">
+        <div className="mb-4  flex  items-center gap-3">
           <div className="h-5 w-5 bg-gray-200"></div>
           <div className=" h-5 w-52 rounded-sm bg-gray-200"></div>
         </div>

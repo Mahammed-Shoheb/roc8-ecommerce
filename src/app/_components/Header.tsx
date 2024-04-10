@@ -7,20 +7,26 @@ import { GoChevronRight, GoChevronLeft } from "react-icons/go";
 import { readFromStorage } from "~/utils/storage";
 import type { data } from "~/utils/storage";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 export default function Header() {
-  const [userName, setUserName] = useState("John");
+  const [userName, setUserName] = useState("");
+  const path = usePathname();
+  const updateUser = () => {
+    const userData: data = readFromStorage("user");
+    if (userData.name) setUserName(userData.name);
+  };
   useEffect(() => {
-    const data: data = readFromStorage("user");
-    if (data.name) setUserName(data.name);
-  }, []);
+    updateUser();
+  }, [path]);
+
   return (
     <header className="flex flex-col py-2 ">
       <div className="flex flex-col gap-y-3 px-2 py-1 md:px-8">
         <div className="flex justify-end gap-x-4 text-xs capitalize">
           <Link href="#">help</Link>
           <Link href="#">orders & returns</Link>
-          <button className="capitalize">hi, {userName}</button>
+          {userName && <button className="capitalize">hi, {userName}</button>}
         </div>
         <div className="flex items-center justify-between py-2">
           <h1 className="text-3xl font-bold uppercase">ecommerce</h1>
