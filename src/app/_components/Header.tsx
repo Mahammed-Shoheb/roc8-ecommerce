@@ -14,7 +14,9 @@ export default function Header() {
   const path = usePathname();
   const updateUser = () => {
     const userData: data = readFromStorage("user");
-    if (userData.name) setUserName(userData.name);
+    console.log(path);
+    if (userData.name && path !== "/login" && path != "/sign-up")
+      setUserName(userData.name);
   };
   useEffect(() => {
     updateUser();
