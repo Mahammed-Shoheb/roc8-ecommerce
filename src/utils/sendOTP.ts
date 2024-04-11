@@ -37,7 +37,7 @@ export default async function sendOTP(email: string, name: string) {
     .setText(
       `Dear ${name},
 
-      Your OTP is: ${otp}, OTP will expires in ${new Date(expires).toLocaleDateString()}.
+      Your OTP is: ${otp}, OTP will expires in ${new Date(expires).toLocaleTimeString()}.
       
       Regards,
       ECOMMERCE APP
